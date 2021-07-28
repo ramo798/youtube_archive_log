@@ -1,7 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"log"
+	"regexp"
+	"strings"
 
 	"github.com/PuerkitoBio/goquery"
 )
@@ -49,13 +52,29 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	outside.Each(func(index int, s *goquery.Selection) {
-		// なんかする
-	})
-	innerSeceltion := outside.Find("iframe")
+
+	innerSeceltion := outside.Find("script")
 	innerSeceltion.Each(func(index int, s *goquery.Selection) {
-		iframe_url, _ := s.Attr("src")
-		log.Println(iframe_url)
+		// iframe_url, _ := s.Attr("src")
+		// log.Println(iframe_url)
+		// log.Println(s.Html())
+		t, err := s.Html()
+		if err != nil {
+			log.Fatal(err)
+		}
+		reg := "\r\n|\n"
+		arr1 := regexp.MustCompile(reg).Split(t, -1)
+		// log.Println(len(arr1))
+		// fmt.Printf("%s\n", arr1[1])
+
+		// fmt.Println(len(arr1))
+		for _, s := range arr1 {
+			if strings.Contains(s, "ytInitialData") {
+				fmt.Printf("%s\n", s[0:100])
+				fmt.Println("-----------------")
+			}
+		}
+
 	})
 
 }
